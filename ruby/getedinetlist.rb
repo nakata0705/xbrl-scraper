@@ -47,6 +47,7 @@ if File.exist?("#{$workdir_name}/#{$edinetcodecsv_utf8_name}") == false
     exit(-1);
 end
 
+Mongo::Logger.logger.level = $mongologlevel;
 client = Mongo::Client.new([$mongoserver], :database => $mongodb, :user => $mongouser, :password => $mongopass)
 client[:edinetcode].indexes.create_one({ :edinetcode => 1 }, :unique => true);
 

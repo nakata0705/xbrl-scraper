@@ -23,14 +23,27 @@ forever -w start /usr/local/lib/node_modules/mongo-express/app.js
 
 python3 arelleCmdLine.py  --disclosureSystem fsa -f ../E02367/2015_1Q_S1005JRG/XBRL/PublicDoc/jpcrp040300-q1r-001_E02367-000_2015-06-30_01_2015-08-07.xbrl --store-to-XBRL-DB "jsonFile,,xbrl,xbrl,/home/nakata0705/workspace/test2.json,,json"
 
-apt-get install ruby-dev
-gem install mongo
+# apt-get install ruby-dev
+# gem install mongo
 
-apt-get install unzip nkf
+# apt-get install unzip nkf
 
-apt-get purge nginx nginx-full nginx-common
-apt-get install nginx
+# apt-get purge nginx nginx-full nginx-common
+# apt-get install nginx
 Refer this for nginx SSH reverse proxy setup. http://blog.akagi.jp/archives/3883.html
 
 { baseItem: { $regex: /\:OperatingIncome/i }, period: {$regex: /xbrli:period\/duration\/\d{4,4}-04-01\/\d{4,4}-03-31/ }, contextId: {$regex: /^CurrentYear(?!.*Non).*$/i } }
 { baseItem: { $regex: /\:OperatingIncome/i }, period: {$regex: /xbrli:period\/duration\/\d{4,4}-04-01\/\d{4,4}-03-31/ }, $or: [ { contextId: "CurrentYearDuration"}, {contextId: "CurrentYearConsolidatedDuration"} ], entityIdentifier: { $regex: /E02475/} }
+
+
+# iptables -A INPUT -p tcp --tcp-flags ALL NONE -j DROP 
+# iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP 
+# iptables -A INPUT -p tcp --tcp-flags ALL ALL -j DROP
+# iptables -A INPUT -i lo -j ACCEPT 
+# iptables -A INPUT -p icmp -j ACCEPT
+# iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+# iptables -I INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+# iptables -P INPUT DROP 
+# iptables -P OUTPUT ACCEPT
+# apt-get install iptables-persistent
+

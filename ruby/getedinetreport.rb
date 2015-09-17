@@ -14,6 +14,7 @@ if File.exist?("#{$workdir_name}") == false
     FileUtils.mkdir_p($workdir_name);
 end
 
+Mongo::Logger.logger.level = $mongologlevel;
 client = Mongo::Client.new([$mongoserver], :database => $mongodb, :user => $mongouser, :password => $mongopass)
 documents = client[:edinetcode].find({ :$or => [ { :edinetcode => target }, { :name_jp => target }, { :ticker => target.to_i }, { :ticker => (target + '0').to_i } ] });
 
@@ -36,13 +37,10 @@ end
 
 system("rm -f #{$workdir_name}/#{target_edinetcode}.zip");
 
-p "parsexbrl.rb #{$workdir_name}/#{target_edinetcode}";
-
 if system("ruby parsexbrl.rb #{$workdir_name}/#{target_edinetcode}") == false
     print "Error: parsexbrl.rb returned -1\n";
     exit(-1);
 else
-    print "Success\n"
     if $removeafterprocess
         FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}");
     end

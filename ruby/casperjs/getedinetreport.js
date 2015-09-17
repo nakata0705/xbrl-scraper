@@ -7,6 +7,13 @@ var casper = require('casper').create();
 
 var g_loadingurl = '';
 var g_reporturl = '';
+var g_log = false;
+
+function log(message) {
+    if (g_log) {
+        this.echo(message);
+    }
+}
 
 if (casper.cli.has(0) == false || casper.cli.has(1) == false) {
     this.exit(-1);
@@ -18,23 +25,21 @@ var workdir_name = casper.cli.get(1);
 casper.userAgent('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)');
 
 casper.on('page.resource.requested', function(request) {
-    this.echo('page.resource.requested: ' + request.url);
+    log('page.resource.requested: ' + request.url);
     //require('utils').dump(request);
     if (request.url.match(/download/) && g_reporturl.length == 0) {
         g_reporturl = request.url;
-        this.echo('aborting request');
+        log('aborting request');
         request.abort();
     }
 });
 
 casper.on('page.resource.received', function(response) {
-    this.echo('page.resource.received ' + response.url);
-    //require('utils').dump(response);
+    log('page.resource.received ' + response.url);
 });
 
 casper.on('resource.error', function(error) {
     this.echo('resource.error ' + error);
-    //require('utils').dump(error);
 });
 
 casper.setFilter("page.confirm", function(msg) {
@@ -44,7 +49,7 @@ casper.setFilter("page.confirm", function(msg) {
 casper.start('http://disclosure.edinet-fsa.go.jp/');
 
 casper.then(function() {
-    this.echo('Click ' + '書類検索');
+    log('Click ' + '書類検索');
     this.click('img[alt="書類検索"]');
 });
 
@@ -56,20 +61,20 @@ casper.then(function() {
         oth: false,
         pfs: 5
     }, false);
-    this.echo('Click input[onclick*="SendSearchAction"]');
+    log('Click input[onclick*="SendSearchAction"]');
     this.click('input[onclick*="SendSearchAction"]');
 });
 
 casper.then(function() {
-    this.echo('Click input#xbrlbutton');
+    log('Click input#xbrlbutton');
     this.click('input#xbrlbutton');
 });
 
 casper.waitFor(function() { return g_reporturl; }, function() {
-    this.echo('requesting ' + g_reporturl);
+    log('requesting ' + g_reporturl);
     this.download(g_reporturl, workdir_name + '/' + g_edinetreportzip);
 }, function() {
-    this.echo('timeout').exit();
+    this.echo('timeout').exit(-1);
 }, 60000);
 
 casper.run();
