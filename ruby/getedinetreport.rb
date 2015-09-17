@@ -43,7 +43,9 @@ if system("ruby parsexbrl.rb #{$workdir_name}/#{target_edinetcode}") == false
     exit(-1);
 else
     print "Success\n"
-    FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}");
+    if $removeafterprocess
+        FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}");
+    end
     exit(0);
 end
 

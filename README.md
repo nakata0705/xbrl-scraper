@@ -5,7 +5,7 @@ sudo apt-get install nodejs-legacy
 sudo apt-get install npm
 
 npm install -g casperjs
-ln -s /home/ubuntu//.nvm/v0.10.35/lib/node_modules/casperjs/node_modules/phantomjs/lib/phantom/bin/phantomjs /usr/local/bin/phantomjs
+ln -s /home/ubuntu/.nvm/v0.10.35/lib/node_modules/casperjs/node_modules/phantomjs/lib/phantom/bin/phantomjs /usr/local/bin/phantomjs
 
 git clone https://github.com/Arelle/Arelle.git
 apt-get install python3-lxml
@@ -27,6 +27,10 @@ apt-get install ruby-dev
 gem install mongo
 
 apt-get install unzip nkf
+
+apt-get purge nginx nginx-full nginx-common
+apt-get install nginx
+Refer this for nginx SSH reverse proxy setup. http://blog.akagi.jp/archives/3883.html
 
 { baseItem: { $regex: /\:OperatingIncome/i }, period: {$regex: /xbrli:period\/duration\/\d{4,4}-04-01\/\d{4,4}-03-31/ }, contextId: {$regex: /^CurrentYear(?!.*Non).*$/i } }
 { baseItem: { $regex: /\:OperatingIncome/i }, period: {$regex: /xbrli:period\/duration\/\d{4,4}-04-01\/\d{4,4}-03-31/ }, $or: [ { contextId: "CurrentYearDuration"}, {contextId: "CurrentYearConsolidatedDuration"} ], entityIdentifier: { $regex: /E02475/} }

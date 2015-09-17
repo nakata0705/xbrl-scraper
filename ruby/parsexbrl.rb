@@ -26,53 +26,63 @@ def FindLabel(object, label)
     return nil
 end
 
-def generate_json(base_dirname)
+def generate_json(base_dirname, langarray)
     filelist = Dir.glob("#{base_dirname}/*.xbrl");
     if filelist.length != 1
         puts "Unexpected number of xbrl files. #{filelist.length}";
-        return "";
+        return false;
     end
     
-    #return system("python3 #{$arelledir}/arelleCmdLine.py  --disclosureSystem fsa -f #{filelist[0]} --store-to-XBRL-DB \"jsonFile,,xbrl,xbrl,#{base_dirname}/output.json,,json\"");
-    result = system("python3 #{$arelledir}/arelleCmdLine.py  -f #{filelist[0]} --store-to-XBRL-DB \"jsonFile,,xbrl,xbrl,#{base_dirname}/output.json,,json\"");
-    if result == false
-        return "";
+    langarray.each do |lang|# EN output
+        #result = system("python3 #{$arelledir}/arelleCmdLine.py -f #{filelist[0]} --labelLang #{lang} --facts #{base_dirname}/facts_#{lang}.json --factListCols Label,Name,contextRef,unitRef,Dec,Prec,Lang,Value,EntityScheme,EntityIdentifier,Period,Dimensions --concepts #{base_dirname}/concepts_#{lang}.json --pre #{base_dirname}/pre_#{lang}.json --cal #{base_dirname}/cal_#{lang}.json --dim #{base_dirname}/dim_#{lang}.json --formulae #{base_dirname}/formulae_#{lang}.json --viewArcrole #{base_dirname}/viewArcrole_#{lang}.json --roleTypes #{base_dirname}/roleTypes_#{lang}.json --arcroleTypes #{base_dirname}/arcroleTypes_#{lang}.json");
+        result = system("python3 #{$arelledir}/arelleCmdLine.py -f #{filelist[0]} --labelLang #{lang} --facts #{base_dirname}/facts_#{lang}.json --factListCols Label,Name,contextRef,unitRef,Dec,Prec,Lang,Value,EntityScheme,EntityIdentifier,Period,Dimensions");
+        if result == false
+            return false;
+        end
     end
     
-    json = File.read("#{base_dirname}/output.json");
-    FileUtils.rm_rf("#{base_dirname}/output.json");
-    
-    return json;
+    return true;
 end
 
-def parse_json(json, mongo_client)
-    # Extract essential part of JSON (financial report instance)
-    filings = json.scan(/\"filings\"\:\s*(?<json>\{([^\{\}]++|\g<json>)*+*\})/i);
-    
-    json_parsed = JSON.parse(filings[0][0], { :max_nesting => false });
-    
-    datapoints = FindLabel(json_parsed, 'dataPoints')
-
-    if datapoints == nil
-        return false;
-    else
-        datapoints.each do |doc_key, doc|
-            doc.each do |key, value|
-                if value.respond_to?(:gsub) == true
-                    doc[key] = value.gsub(/^file:\/\/\/.*?([^\/]*?\.xbrl.*?)$/, '\1')
-                end
+def parse_json(path, mongo_client, langarray)
+    langarray.each do |lang|
+        json = JSON.parse(File.read(path+"/facts_#{lang}.json"));
+        json["factList"].each do |facts|
+            fact = facts[2];
+            fact["label_#{lang}"] = fact["label"];
+            fact.delete("label");
+            if fact["value"] =~ /^[\d\,\.]*$/
+                fact["value"] = fact["value"].gsub(/(\d),(\d)/, '\1\2').to_f;
             end
-            mongo_client[:edinetdatapoints].bulk_write( [ { :replace_one => { :find => { :baseItem => doc['baseItem'], :contextId => doc['contextId'], :document => doc['document'], :period => doc['period'] }, :replacement => doc, :upsert => true } } ], :ordered => false );
+            target = {
+                :entityIdentifier => fact["entityIdentifier"],
+                :name => fact["name"],
+                :endInstant => fact["endInstant"],
+                :contextRef => fact["contextRef"]
+            };
+            if fact["start"]
+                target["start"] = fact["start"];
+            end
+            
+            mongo_client[:edinetfacts].bulk_write( [ { :update_one => {
+                :find => target,
+                :update => { "$set" => fact },
+                :upsert => true } } ], :ordered => false );
+            
         end
-        
-        return true;
     end
+    
+    if $removeafterprocess
+        FileUtils.rm_rf(path + "/*.json");
+    end
+    
+    return true;
 end
 
 target_dir = ARGV[0];
 Mongo::Logger.logger.level = $mongologlevel;
 client = Mongo::Client.new([$mongoserver], :database => $mongodb, :user => $mongouser, :password => $mongopass)
-client[:edinetdatapoints].indexes.create_one({ :baseItem => 1, :contextUrl => 1, :dataPointUrl => 1, :period => 1 }, :unique => true);
+client[:edinetfacts].indexes.create_one({ :entityIdentifier => 1, :name => 1, :start => 1, :endInstant => 1, :contextRef => 1 }, { :unique => true, :sparse => true });
 
 # Scan target directory and call ParseXBRL function for each directory which contains XBRL file.
 Dir.foreach(target_dir) do |f|
@@ -80,18 +90,18 @@ Dir.foreach(target_dir) do |f|
         result = true;
         json = "";
         if File.exist?("#{target_dir}/#{f}/XBRL")
-            json = generate_json("#{target_dir}/#{f}/XBRL/PublicDoc");
+            path = "#{target_dir}/#{f}/XBRL/PublicDoc";
         else
-            json = generate_json("#{target_dir}/#{f}");
+            path = "#{target_dir}/#{f}";
         end
         
-        if json.length == 0
-            print "Warning: couldn't generate valid json.\n";
-            return -1;
-        end
-        
-        if parse_json(json, client) == false
-            print "Warning: couldn't parse json./n";
+        langarray = ["en-US", "ja-JP"];
+        if generate_json(path, langarray)
+            if parse_json(path, client, langarray) == false
+                print "Warning: couldn't parse json./n";
+                exit(-1);
+            end
+            exit(0);
         end
     end
 end

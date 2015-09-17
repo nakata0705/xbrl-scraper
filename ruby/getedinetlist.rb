@@ -70,3 +70,7 @@ table.each do |field|
     #result = client[:edinetcode].insert_one(doc)
     client[:edinetcode].bulk_write( [ { :replace_one => { :find => { :edinetcode => field[0] }, :replacement => doc, :upsert => true } } ], :ordered => false );
 end
+
+if $deleteafterprocess
+    FileUtils.mkdir_p($workdir_name);
+end

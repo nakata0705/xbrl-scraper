@@ -1,3 +1,5 @@
+$removeafterprocess = true;
+
 $workdir_name = "workdir";
 $edinetcodezip_name = "edinetcode.zip";
 $edinetcodecsv_name = "EdinetcodeDlInfo.csv";
