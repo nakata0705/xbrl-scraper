@@ -35,7 +35,7 @@ if system("unzip -o -q #{$workdir_name}/#{target_edinetcode}.zip -d #{$workdir_n
     exit(-1);
 end
 
-system("rm -f #{$workdir_name}/#{target_edinetcode}.zip");
+FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}.zip");
 
 if system("ruby parsexbrl.rb #{$workdir_name}/#{target_edinetcode}") == false
     print "Error: parsexbrl.rb returned -1\n";
@@ -45,5 +45,6 @@ end
 if $removeafterprocess
     FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}");
 end
+
 exit(0);
 

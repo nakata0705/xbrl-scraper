@@ -35,7 +35,7 @@ def generate_json(base_dirname, langarray)
     
     langarray.each do |lang|# EN output
         #result = system("python3 #{$arelledir}/arelleCmdLine.py -f #{filelist[0]} --labelLang #{lang} --facts #{base_dirname}/facts_#{lang}.json --factListCols Label,Name,contextRef,unitRef,Dec,Prec,Lang,Value,EntityScheme,EntityIdentifier,Period,Dimensions --concepts #{base_dirname}/concepts_#{lang}.json --pre #{base_dirname}/pre_#{lang}.json --cal #{base_dirname}/cal_#{lang}.json --dim #{base_dirname}/dim_#{lang}.json --formulae #{base_dirname}/formulae_#{lang}.json --viewArcrole #{base_dirname}/viewArcrole_#{lang}.json --roleTypes #{base_dirname}/roleTypes_#{lang}.json --arcroleTypes #{base_dirname}/arcroleTypes_#{lang}.json");
-        result = system("python3 #{$arelledir}/arelleCmdLine.py --logLevel info -f #{filelist[0]} --labelLang #{lang} --facts #{base_dirname}/facts_#{lang}.json --factListCols Label,Name,contextRef,unitRef,Dec,Prec,Lang,Value,EntityScheme,EntityIdentifier,Period,Dimensions");
+        result = system("python3 #{$arelledir}/arelleCmdLine.py --logLevel error -f #{filelist[0]} --labelLang #{lang} --facts #{base_dirname}/facts_#{lang}.json --factListCols Label,Name,contextRef,unitRef,Dec,Prec,Lang,Value,EntityScheme,EntityIdentifier,Period,Dimensions");
         if result == false
             return false;
         end

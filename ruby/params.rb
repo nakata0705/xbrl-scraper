@@ -1,4 +1,5 @@
 $removeafterprocess = true;
+$retry_limit = 3;
 
 $workdir_name = "workdir";
 $edinetcodezip_name = "edinetcode.zip";
@@ -9,7 +10,7 @@ $mongoserver = 'localhost:27017';
 $mongodb = 'xbrl';
 $mongouser = 'xbrl';
 $mongopass = 'xbrl';
-$mongologlevel = Logger::DEBUG;
-#$mongologlevel = Logger::WARN;
+#$mongologlevel = Logger::DEBUG;
+$mongologlevel = Logger::WARN;
 
 $arelledir = '../Arelle';
