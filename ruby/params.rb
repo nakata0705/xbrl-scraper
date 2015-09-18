@@ -9,7 +9,7 @@ $mongoserver = 'localhost:27017';
 $mongodb = 'xbrl';
 $mongouser = 'xbrl';
 $mongopass = 'xbrl';
-#$mongologlevel = Logger::DEBUG;
-$mongologlevel = Logger::WARN;
+$mongologlevel = Logger::DEBUG;
+#$mongologlevel = Logger::WARN;
 
 $arelledir = '../Arelle';

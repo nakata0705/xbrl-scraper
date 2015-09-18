@@ -13,7 +13,7 @@ counter = 1;
 edinetcodelist.each do |edinetcode|
     print "getalledinetreport.rb (#{counter}/#{edinetcodelist.count}): #{edinetcode['edinetcode']} #{edinetcode['name_en']}\n";
     if system("ruby getedinetreport.rb #{edinetcode['edinetcode']}") == false
-        print "Warning: getedinetreport failed\n";
+        print "getalledinetreport.rb: Error\n";
     end
     counter = counter + 1;
 end
@@ -21,3 +21,5 @@ end
 if $deleteafterprocess
     FileUtils.rm_rf($workdir_name);
 end
+
+print "Process completed.\n"

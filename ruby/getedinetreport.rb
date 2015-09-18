@@ -40,10 +40,10 @@ system("rm -f #{$workdir_name}/#{target_edinetcode}.zip");
 if system("ruby parsexbrl.rb #{$workdir_name}/#{target_edinetcode}") == false
     print "Error: parsexbrl.rb returned -1\n";
     exit(-1);
-else
-    if $removeafterprocess
-        FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}");
-    end
-    exit(0);
 end
+
+if $removeafterprocess
+    FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}");
+end
+exit(0);
 
