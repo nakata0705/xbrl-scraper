@@ -104,11 +104,6 @@ def parse_json(path, mongo_client, langarray)
             
             if mongo_client[:edinetfacts].find(target).count > 0
                 print "Warning: There is a newer fact. Skipping\n";
-                p fact;
-                p "These are duped facts"
-                mongo_client[:edinetfacts].find(target).each do |fact2|
-                    p fact2;
-                end
                 next;
             else
                 target.delete(:submissionDate);
@@ -141,8 +136,6 @@ Dir.foreach(target_dir) do |f|
         else
             path = "#{target_dir}/#{f}";
         end
-        
-        p path;
         
         langarray = ["en-US", "ja-JP"];
         if generate_json(path, langarray)
