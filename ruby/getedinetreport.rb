@@ -37,8 +37,8 @@ end
 
 FileUtils.rm_rf("#{$workdir_name}/#{target_edinetcode}.zip");
 
-if system("ruby parsexbrl.rb #{$workdir_name}/#{target_edinetcode}") == false
-    print "Error: parsexbrl.rb returned -1\n";
+if system("ruby parseedinetxbrl.rb #{$workdir_name}/#{target_edinetcode}") == false
+    print "Error: parseedinetxbrl.rb returned -1\n";
     exit(-1);
 end
 

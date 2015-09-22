@@ -47,3 +47,4 @@ Refer this for nginx SSH reverse proxy setup. http://blog.akagi.jp/archives/3883
 # iptables -P OUTPUT ACCEPT
 # apt-get install iptables-persistent
 
+sudo gem install chronic

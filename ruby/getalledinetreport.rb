@@ -10,15 +10,14 @@ client = Mongo::Client.new([$mongoserver], :database => $mongodb, :user => $mong
 
 max = client[:edinetcode].find({ :listed => true }).sort({ :edinetcode => 1 }).count;
 index = 0;
-limit = 10;
+limit = 5;
 
 while index < max
     edinetcodelist = client[:edinetcode].find({ :listed => true }).no_cursor_timeout.sort({ :edinetcode => 1 }).skip(index).limit(limit);
     edinetcodelist.each do |edinetcode|
-        print "getalledinetreport.rb (#{index + 1}/#{max}): #{edinetcode['edinetcode']} #{edinetcode['name_jp']}\n";
-        
         counter = 0;
         begin
+            print "getalledinetreport.rb (#{index + 1}/#{max}): #{edinetcode['edinetcode']} #{edinetcode['name_jp']}\n";
             if system("ruby getedinetreport.rb #{edinetcode['edinetcode']}") == false
                 raise;
             end
@@ -26,6 +25,7 @@ while index < max
             print "getalledinetreport.rb: (#{index + 1}/#{max}): Error.\n";
             if (counter < $retry_limit)
                 counter = counter + 1;
+                sleep(1 * 2 ** counter );
                 retry;
             end
         end
