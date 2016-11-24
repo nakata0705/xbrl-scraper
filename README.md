@@ -15,6 +15,11 @@ sudo pip3 install PyMySQL
 python3 arelleCmdLine.py --plugins +xbrlDB
 python3 arelleCmdLine.py -f ../E02367/2015_1Q_S1005JRG/XBRL/PublicDoc/jpcrp040300-q1r-001_E02367-000_2015-06-30_01_2015-08-07.xbrl --facts=facts.html --factTable=factTable.html --concepts=concepts.html --pre=pre.html --cal=cal.html --dim=dim.html --formulae=formulae.html
 
+cd /home/nakata0705/c9sdk
+git pull
+script/install-sdk.sh
+
+forever stop [c9sdk ID]
 forever -w start /home/nakata0705/c9sdk/server.js -w /home/nakata0705/workspace -a nakata0705:MY_PASSWORD
 forever -w start /usr/local/lib/node_modules/mongo-express/app.js
 
@@ -48,3 +53,9 @@ Refer this for nginx SSH reverse proxy setup. http://blog.akagi.jp/archives/3883
 # apt-get install iptables-persistent
 
 sudo gem install chronic
+
+sudo apt-get install python-numpy
+sudo apt-get install python-scipy
+sudo apt-get install libblas3
+sudo apt-get install libblas-dev
+
